@@ -27,6 +27,19 @@ class Duty:
         self.duty_period = duty_period
         self.duty_stack = duty_list
         
+
+if __name__ == '__main__':
+    pass
+
+
+
+
+
+
+
+
+
+        
         
         
         
