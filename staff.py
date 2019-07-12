@@ -51,13 +51,13 @@ class ApplicationTeam:
         
         
 if __name__ == '__main__':
-    g1 = GroupMember(8001, '寮犱匠浼�')
+    g1 = GroupMember(8001, '张佳玮')
     print(g1)
-    g2 = GroupMember(8002, '璐烘槬鐜�')
+    g2 = GroupMember(8002, '贺春玮')
     print(g2)
-    g3 = GroupMember(8001, '鏉庢枃鏄�')
+    g3 = GroupMember(8001, '李文明')
     print(g3)
-    t1 = ApplicationTeam('搴旂敤缁�')
+    t1 = ApplicationTeam('应用组')
     t1.addMember(g1)
     t1.addMember(g2)
     t1.addMember(g3)
