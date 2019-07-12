@@ -15,6 +15,9 @@ class GroupMember:
     def getId(self):
         return self.__id
     
+    def __eq__(self, other):
+        return self.__id == other.getId()
+    
     def __repr__(self):
         return "id : {}  name : {}".format(self.getId(), self.getName())
     
@@ -48,13 +51,13 @@ class ApplicationTeam:
         
         
 if __name__ == '__main__':
-    g1 = GroupMember(8001, '张佳伟')
+    g1 = GroupMember(8001, '寮犱匠浼�')
     print(g1)
-    g2 = GroupMember(8002, '贺春玮')
+    g2 = GroupMember(8002, '璐烘槬鐜�')
     print(g2)
-    g3 = GroupMember(8001, '李文明')
+    g3 = GroupMember(8001, '鏉庢枃鏄�')
     print(g3)
-    t1 = ApplicationTeam('应用组')
+    t1 = ApplicationTeam('搴旂敤缁�')
     t1.addMember(g1)
     t1.addMember(g2)
     t1.addMember(g3)
