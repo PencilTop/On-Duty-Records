@@ -5,13 +5,14 @@
 #################################################################
 import datetime
 from staff import GroupMember
+from enums import DutyPeriod
 
-class DutyShiftList:
+class DutyShift:
     def __init__(self, member):
         assert isinstance(member, GroupMember)
         self.__members_list = [member, ]
     
-    def getMembers(self):
+    def getMemberList(self):
         return self.__members_list
     
     def getOnDutyMember(self):
@@ -24,18 +25,47 @@ class DutyShiftList:
             print("shift duty failed for group member : {}".format(member.getName()))
         else:
             self.__members_list.append(member)
+    
+    def __repr__(self):
+        return '-->'.join([m.getName() for m in self.__members_list])
         
 
 class Duty:
-    def __init__(self, date, duty_period, duty_shift_list):
-        self.date = date
-        self.duty_period = duty_period
-        self.duty_stack = duty_shift_list
+    def __init__(self, date, duty_period, duty_shift):
+        self.__date = date
+        self.__duty_period = duty_period
+        self.__duty_shift = duty_shift
+        
+    def getDutyDate(self):
+        return self.__date
+    
+    def getDutyPeriod(self):
+        return self.__duty_period
+    
+    def getDutyShift(self):
+        return self.__duty_shift
+    
+    def shiftDuty(self, member):
+        self.__duty_shift.shiftDuty(member)
+        
+    def __repr__(self):
+        return '\t'.join([self.__date.isoformat(), self.__duty_period.name, repr(self.__duty_shift)])
         
         
 
 if __name__ == '__main__':
-    pass
+    m1 = GroupMember(8001, '张佳玮')
+    m2 = GroupMember(8002, '贺春玮')
+    m3 = GroupMember(8003, '李文明')
+    m4 = GroupMember(8004, '许学成')
+    
+    duty_shift = DutyShift(m1)
+    duty = Duty(datetime.date.today(), DutyPeriod.DayDuty, duty_shift)
+    print(duty)
+    duty.shiftDuty(m2)
+    duty.shiftDuty(m3)
+    print(duty)
+    duty.shiftDuty(m4)
 
 
 

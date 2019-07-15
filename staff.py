@@ -57,6 +57,8 @@ if __name__ == '__main__':
     print(g2)
     g3 = GroupMember(8001, '李文明')
     print(g3)
+    g4 = GroupMember(8001, '李文明')
+    print(g3 == g4)
     t1 = ApplicationTeam('应用组')
     t1.addMember(g1)
     t1.addMember(g2)
