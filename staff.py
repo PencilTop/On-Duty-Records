@@ -36,7 +36,7 @@ class ApplicationTeam:
         if member.getId() not in [ member.getId() for member in self.__members ]:
             self.__members.append(member)
         else:
-            print("dulplicated member id , {} \nadd member failed".format(member))
+            print("dulplicated member, {} \nadd member failed".format(member))
     
     def addMembers(self, members):
         for member in members:
