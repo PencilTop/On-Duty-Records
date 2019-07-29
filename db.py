@@ -5,10 +5,11 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from uuid import uuid4
+from datetime import date
 from enums import DutyPeriod
 
 Base = declarative_base()
-engine = create_engine("sqlite:///db/OnDuty.sqlite", echo=True)
+engine = create_engine("sqlite:///db/OnDuty.sqlite", echo=False)
 
 class Member(Base):
     __tablename__ = 'member'
@@ -39,13 +40,17 @@ class OriginDuty(Base):
     member_id = Column(Integer(), ForeignKey('member.member_id'))
     shift_duty_id = Column(String(32))
     
-    member = relationship('Member', backref=backref('origin_duty', order_by=duty_id))  #a many-to-one relationship
+    member = relationship('Member', backref=backref('origin_duty', lazy='joined', order_by=duty_id))  #a many-to-one relationship
     
     def __init__(self, duty_date, duty_period, member_id):
         self.duty_id = uuid4().hex
         self.duty_date = duty_date
         self.duty_period = duty_period.value
         self.member_id = member_id
+        
+    def __eq__(self, another_origin_duty):
+        return self.duty_id == another_origin_duty.duty_id
+        
         
     def __repr__(self):
         return "origin duty : {}\t{}\t{}".format(self.member.name,
@@ -59,24 +64,29 @@ class ShiftDuty(Base):
     __table_args__ = {'extend_existing' : True}
     
     shift_duty_id = Column(String(32), primary_key=True, default=uuid4().hex)
+    shift_request_date = Column(Date(), nullable=False)
     shift_duty_date = Column(Date(), nullable=False)
     shift_duty_period = Column(Integer(), nullable=False)
     shift_member_id = Column(Integer(), ForeignKey('member.member_id'))
     previous_shift_duty_id = Column(String(32), nullable=False)
     next_shift_duty_id = Column(String(32))
     
-    shift_member = relationship('Member', backref=backref('shift_duty', order_by=shift_duty_id))
+    member = relationship('Member', backref=backref('shift_duty', lazy='joined', order_by=shift_duty_id))
     
-    def __init__(self, shift_duty_date, shift_duty_period, shift_member_id, previous_shift_duty_id=None, next_shift_duty_id=None):
+    def __init__(self, shift_duty_date, shift_duty_period, shift_member_id, shift_request_date=date.today(), previous_shift_duty_id=None, next_shift_duty_id=None):
         self.shift_duty_id = uuid4().hex
+        self.shift_request_date = shift_request_date
         self.shift_duty_date = shift_duty_date
         self.shift_duty_period = shift_duty_period.value
         self.shift_member_id = shift_member_id
         self.previous_shift_duty_id = previous_shift_duty_id
         self.next_shift_duty_id = next_shift_duty_id
         
+    def __eq__(self, another_shift_duty):
+        return self.shift_duty_id == another_shift_duty.shift_duty_id
+        
     def __repr__(self):
-        return "shift duty : {}\t{}\t{}".format(self.shift_member.name,
+        return "shift duty : {}\t{}\t{}".format(self.member.name,
                                                 self.shift_duty_date.isoformat(),
                                                 DutyPeriod(self.shift_duty_period).name)
         
