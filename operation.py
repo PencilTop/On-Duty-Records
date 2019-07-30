@@ -107,11 +107,10 @@ class DBOperation:
                     return shift_chain
         except Exception as e:
                 print(e)
-                session.rollback()
+                return 
         finally:
             session.close()                                                                      
         
-    
     @staticmethod
     def getAllShiftList(month):
         pass
@@ -155,13 +154,12 @@ class DBOperation:
     
     
 if __name__ == '__main__':
-    duty_date = date(2019, 4, 2)
+    duty_date = date(2019, 4, 4)
     DBOperation.deleteShiftDutyRecord(duty_date)
-    #member = DBOperation.getMemberById(8023)
+    #member = DBOperation.getMemberById(8033)
     #DBOperation.shiftDuty(duty_date, DutyPeriod.NightDuty, member)
     print(DBOperation.getDutyShiftChain(duty_date, DutyPeriod.NightDuty))
     """
-    
     
     
     #print(DBOperation.hasInitDutyData(4, 2020))

@@ -25,8 +25,12 @@ def init_origin_duty_data(month):
     if not DBOperation.hasInitDutyData(month):
         table_name = Month(month).name + "_origin_on_duty.csv"
         table_path = os.path.join('data', table_name)
+        try:
+            odf = pd.read_csv(table_path).fillna('')
+        except Exception as e:
+            print(e)
+            sys.exit("data file {} read failed.".format(table_name))
         session = Session()
-        odf = pd.read_csv(table_path).fillna('')
         try:
             for i in odf.index:
                 if odf['DayDutyID'][i] == '':
@@ -51,25 +55,24 @@ def init_origin_duty_data(month):
         finally:
             session.close()
     else:
-        print("origin duty data of {} has been init.".format(Month(month).name))
+        sys.exit("origin duty data of {} has already init.".format(Month(month).name))
 
 
-def shift_duty(duty_date_str, duty_period_str, member_name):
-    if len(duty_date_str.split('/')) == 3:
-        date_list = duty_date_str.split('/')
-    elif len(duty_date_str.split('-')) == 3:
-        date_list = duty_date_str.split('/')
+def shift_duty(duty_date, duty_period, member):
+    if duty_date is None or duty_period is None or member is None:
+        sys.exit("shift duty message is not right, please check.")
+    shift_chain = DBOperation.getDutyShiftChain(duty_date, duty_period)
+    if shift_chain is not None and shift_chain.getOnDutyMember() != member:
+        DBOperation.shiftDuty(duty_date, duty_period, member)
     else:
-        sys.exit("Unkown date format string.")
-    date_str = date_list[0] + date_list[1].zfill(2) + date_list[2].zfill(2)
-    duty_date = datetime.date.fromisoformat(date_str)
-    if duty_period_str == "白班":
-        duty_period = DutyPeriod.DayDuty
-    elif duty_period_str == "晚班":
-        duty_period = DutyPeriod.NightDuty
-    member = DBOperation.getMemberByName(member_name)
-    if member is None:
-        sys.exit("can't find {} in application team.".format(member_name))
+        sys.exit("can not find duty shift-chain or the on-duty member is the shift member.")
+    print('shift duty executed successfully.')
+    
+def select_duty_record(duty_date, duty_period):
+    return DBOperation.getDutyShiftChain(duty_date, duty_period)
+    
+
+        
         
     
         
@@ -77,7 +80,8 @@ def shift_duty(duty_date_str, duty_period_str, member_name):
 
 if __name__ == '__main__':
     insert_members()
-    init_origin_duty_data(4)
+    #init_origin_duty_data(4)
+    #shift_duty('2019-4-4', '晚班', '李会')
     
 #    mdf = pd.read_csv('data/application_team_data.csv')
 #    print(mdf)
